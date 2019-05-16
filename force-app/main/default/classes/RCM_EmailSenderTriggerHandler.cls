@@ -1,16 +1,15 @@
 /**
 * @author Fumiyasu Tanaka
-* @date 11/05/2019
+* @date 16/05/2019
 * @description
 * Class sends confirmation emails with the specified template to the candidates whenever they are choosen as employees.
 */
 public class RCM_EmailSenderTriggerHandler {
     static final String EMAIL_TEMPLATE_NAME = 'Candidate_Confirmation_Email';
-    static final Integer MIN_NUMBER_SEND_EMAIL = 1;
 
     /**
     * @author Fumiyasu Tanaka
-    * @date 11/05/2019
+    * @date 16/05/2019
     * @description
 	* This method sends confirmation emails with the specified template to the candidates who are chosen as employees
 	* when new records of RCM_Job_Application__c are created.
@@ -18,11 +17,10 @@ public class RCM_EmailSenderTriggerHandler {
     * @return void
     */
     public static void beforeInsert(List<RCM_Job_Application__c> triggerNew) {
-        List < Messaging.SingleEmailMessage > emailList = new List < Messaging.SingleEmailMessage > ();
         //Get Template
-        EmailTemplate emailTemplate = [
-            SELECT Id, Subject, Body FROM EmailTemplate WHERE DeveloperName = : EMAIL_TEMPLATE_NAME
-        ];
+        EmailTemplate emailTemplate = [SELECT Id FROM EmailTemplate WHERE DeveloperName = : EMAIL_TEMPLATE_NAME];
+        //Get Contact
+        Contact contact = [SELECT Id, Email FROM Contact Limit 1];
 
         for (RCM_Job_Application__c jacNew : triggerNew) {
             System.debug('RCM_Job_Application__c.RCM_Status__c :' + jacNew.RCM_Status__c);
@@ -34,14 +32,16 @@ public class RCM_EmailSenderTriggerHandler {
                 ];
                 System.debug('RCM_Candidate__c candidate:' + candidate);
 
-                //Create Email and Add Email to emailList
-                emailList.add(createEmail(emailTemplate, candidate));
-            }
+                //Create Email
+                Messaging.SingleEmailMessage mail = createEmail(
+                    emailTemplate,
+                    candidate,
+                    contact
+                );
 
-            //Send Email
-            if (MIN_NUMBER_SEND_EMAIL <= emailList.size()) {
+                //Send Email
                 try {
-                    Messaging.sendEmail(emailList);
+                    Messaging.sendEmail(new Messaging.SingleEmailMessage[]{mail});
                 } catch (Exception e) {
                     System.debug(e.getMessage());
                 }
@@ -52,7 +52,7 @@ public class RCM_EmailSenderTriggerHandler {
 
     /**
     * @author Fumiyasu Tanaka
-    * @date 11/05/2019
+    * @date 16/05/2019
     * @description
 	* This method sends confirmation emails with the specified template to the candidates who are chosen as employees
 	* when the existing records of RCM_Job_Application__c are updated.
@@ -64,11 +64,10 @@ public class RCM_EmailSenderTriggerHandler {
         List<RCM_Job_Application__c> triggerNew,
         Map<Id, RCM_Job_Application__c> triggerOldMap
     ) {
-        List < Messaging.SingleEmailMessage > emailList = new List < Messaging.SingleEmailMessage > ();
         //Get Template
-        EmailTemplate emailTemplate = [
-            SELECT Id, Subject, Body FROM EmailTemplate WHERE DeveloperName = : EMAIL_TEMPLATE_NAME
-        ];
+        EmailTemplate emailTemplate = [SELECT Id FROM EmailTemplate WHERE DeveloperName = : EMAIL_TEMPLATE_NAME];
+        //Get Contact
+        Contact contact = [SELECT Id, Email FROM Contact Limit 1];
 
         for (RCM_Job_Application__c jacNew : triggerNew) {
             RCM_Job_Application__c jacOld = triggerOldMap.get(jacNew.Id);
@@ -86,14 +85,16 @@ public class RCM_EmailSenderTriggerHandler {
                 ];
                 System.debug('RCM_Candidate__c candidate:' + candidate);
 
-                //Create Email and Add Email to emailList
-                emailList.add(createEmail(emailTemplate, candidate));
-            }
+                //Create Email
+                Messaging.SingleEmailMessage mail = createEmail(
+                    emailTemplate,
+                    candidate,
+                    contact
+                );
 
-            //Send Email
-            if (MIN_NUMBER_SEND_EMAIL <= emailList.size()) {
+                //Send Email
                 try {
-                    Messaging.sendEmail(emailList);
+                    Messaging.sendEmail(new Messaging.SingleEmailMessage[]{mail});
                 } catch (Exception e) {
                     System.debug(e.getMessage());
                 }
@@ -104,28 +105,30 @@ public class RCM_EmailSenderTriggerHandler {
 
     /**
     * @author Fumiyasu Tanaka
-    * @date 11/05/2019
+    * @date 16/05/2019
     * @description
 	* This method create confirmation emails with the specified template.
     * @param emailTemplate The specified template
     * @param candidate Candidate who are chosen as employees
+    * @param contact Contact for TargetObjectId
     * @return void
     */
     private static Messaging.SingleEmailMessage createEmail(
         EmailTemplate emailTemplate,
-        RCM_Candidate__c candidate
+        RCM_Candidate__c candidate,
+        Contact contact
     ) {
         Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
 
         String[] toAddresses = new String[]{candidate.RCM_Email__c};
+        email.setTemplateId(emailTemplate.Id);
+        email.setTargetObjectId(contact.Id);
+        email.setWhatId(candidate.Id);
+        email.setUseSignature(false);
+        email.setBccSender(false);
+        email.setSaveAsActivity(false);
         email.setToAddresses(toAddresses);
         email.setSenderDisplayName('Salesforce');
-        email.setSubject(emailTemplate.Subject);
-        email.setBccSender(false);
-        email.setUseSignature(false);
-        email.setPlainTextBody(
-            'Dear ' + candidate.RCM_First_Name__c + '\n\n' + emailTemplate.Body
-        );
         System.debug('Email :' + email);
 
         return email;
