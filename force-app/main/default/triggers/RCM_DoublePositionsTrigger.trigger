@@ -3,7 +3,7 @@ trigger RCM_DoublePositionsTrigger on RCM_Position__c (before insert, before upd
         if (Trigger.isInsert) {
             RCM_DoublePositionsTriggerHander.beforeInsert(Trigger.New);
         }
-        if (Trigger.isUpdate) {
+        else if (Trigger.isUpdate) {
             RCM_DoublePositionsTriggerHander.beforeUpdate(Trigger.New,Trigger.Old);
         }
     }
