@@ -1,15 +1,15 @@
 /**
 * @author Fumiyasu Tanaka
-* @date 16/05/2019
+* @date 21/05/2019
 * @description
 * Class sends confirmation emails with the specified template to the candidates whenever they are choosen as employees.
 */
 public class RCM_EmailSenderTriggerHandler {
-    static final String EMAIL_TEMPLATE_NAME = 'Candidate_Confirmation_Email';
+    static final String EMAIL_TEMPLATE_NAME = 'RCM_Candidate_Confirmation_Email';
 
     /**
     * @author Fumiyasu Tanaka
-    * @date 16/05/2019
+    * @date 21/05/2019
     * @description
 	* This method sends confirmation emails with the specified template to the candidates who are chosen as employees
 	* when new records of RCM_Job_Application__c are created.
@@ -21,38 +21,38 @@ public class RCM_EmailSenderTriggerHandler {
         EmailTemplate emailTemplate = [SELECT Id FROM EmailTemplate WHERE DeveloperName = : EMAIL_TEMPLATE_NAME];
         //Get Contact
         Contact contact = [SELECT Id, Email FROM Contact Limit 1];
+        //Get Candidate
+        List<RCM_Candidate__c> candidateList = [SELECT Id, RCM_Email__c, RCM_First_Name__c FROM RCM_Candidate__c];
 
-        for (RCM_Job_Application__c jacNew : triggerNew) {
-            System.debug('RCM_Job_Application__c.RCM_Status__c :' + jacNew.RCM_Status__c);
+        for (RCM_Candidate__c candidate : candidateList) {
+            for (RCM_Job_Application__c jacNew : triggerNew) {
+                System.debug('RCM_Job_Application__c.RCM_Status__c :' + jacNew.RCM_Status__c);
 
-            if (jacNew.RCM_Status__c == 'Hired') {
-                //Get Candidate Fields
-                RCM_Candidate__c candidate = [
-                    SELECT Id, RCM_Email__c, RCM_First_Name__c FROM RCM_Candidate__c WHERE id = : jacNew.RCM_Candidate__c LIMIT 1
-                ];
-                System.debug('RCM_Candidate__c candidate:' + candidate);
+                if (jacNew.RCM_Status__c == 'Hired' && candidate.Id == jacNew.RCM_Candidate__c) {
+                    //Create Email
+                    Messaging.SingleEmailMessage mail = createEmail(
+                        emailTemplate,
+                        candidate,
+                        contact
+                    );
 
-                //Create Email
-                Messaging.SingleEmailMessage mail = createEmail(
-                    emailTemplate,
-                    candidate,
-                    contact
-                );
+                    //Send Email
+                    try {
+                        Messaging.sendEmail(new Messaging.SingleEmailMessage[]{mail});
+                    } catch (Exception e) {
+                        System.debug(e.getMessage());
+                    }
 
-                //Send Email
-                try {
-                    Messaging.sendEmail(new Messaging.SingleEmailMessage[]{mail});
-                } catch (Exception e) {
-                    System.debug(e.getMessage());
                 }
-            }
 
+            }
         }
+
     }
 
     /**
     * @author Fumiyasu Tanaka
-    * @date 16/05/2019
+    * @date 21/05/2019
     * @description
 	* This method sends confirmation emails with the specified template to the candidates who are chosen as employees
 	* when the existing records of RCM_Job_Application__c are updated.
@@ -68,48 +68,48 @@ public class RCM_EmailSenderTriggerHandler {
         EmailTemplate emailTemplate = [SELECT Id FROM EmailTemplate WHERE DeveloperName = : EMAIL_TEMPLATE_NAME];
         //Get Contact
         Contact contact = [SELECT Id, Email FROM Contact Limit 1];
+        //Get Candidate
+        List<RCM_Candidate__c> candidateList = [SELECT Id, RCM_Email__c, RCM_First_Name__c FROM RCM_Candidate__c];
 
-        for (RCM_Job_Application__c jacNew : triggerNew) {
-            RCM_Job_Application__c jacOld = triggerOldMap.get(jacNew.Id);
-            System.debug(
-                'NEW RCM_Job_Application__c.RCM_Status__c :' + jacNew.RCM_Status__c
-            );
-            System.debug(
-                'OLD RCM_Job_Application__c.RCM_Status__c :' + jacOld.RCM_Status__c
-            );
-
-            if (jacNew.RCM_Status__c != jacOld.RCM_Status__c && jacNew.RCM_Status__c == 'Hired') {
-                //Get Candidate Fields
-                RCM_Candidate__c candidate = [
-                    SELECT Id, RCM_Email__c, RCM_First_Name__c FROM RCM_Candidate__c WHERE id = : jacNew.RCM_Candidate__c LIMIT 1
-                ];
-                System.debug('RCM_Candidate__c candidate:' + candidate);
-
-                //Create Email
-                Messaging.SingleEmailMessage mail = createEmail(
-                    emailTemplate,
-                    candidate,
-                    contact
+        for (RCM_Candidate__c candidate : candidateList) {
+            for (RCM_Job_Application__c jacNew : triggerNew) {
+                RCM_Job_Application__c jacOld = triggerOldMap.get(jacNew.Id);
+                System.debug(
+                    'NEW RCM_Job_Application__c.RCM_Status__c :' + jacNew.RCM_Status__c
+                );
+                System.debug(
+                    'OLD RCM_Job_Application__c.RCM_Status__c :' + jacOld.RCM_Status__c
                 );
 
-                //Send Email
-                try {
-                    Messaging.sendEmail(new Messaging.SingleEmailMessage[]{mail});
-                } catch (Exception e) {
-                    System.debug(e.getMessage());
-                }
-            }
+                if (jacNew.RCM_Status__c != jacOld.RCM_Status__c && jacNew.RCM_Status__c == 'Hired' && candidate.Id == jacNew.RCM_Candidate__c) {
+                    //Create Email
+                    Messaging.SingleEmailMessage mail = createEmail(
+                        emailTemplate,
+                        candidate,
+                        contact
+                    );
 
+                    //Send Email
+                    try {
+                        Messaging.sendEmail(new Messaging.SingleEmailMessage[]{mail});
+                    } catch (Exception e) {
+                        System.debug(e.getMessage());
+                    }
+
+                }
+
+            }
         }
+
     }
 
     /**
     * @author Fumiyasu Tanaka
-    * @date 16/05/2019
+    * @date 21/05/2019
     * @description
 	* This method create confirmation emails with the specified template.
     * @param emailTemplate The specified template
-    * @param candidate Candidate who are chosen as employees
+    * @param jac Job Application Custom Object
     * @param contact Contact for TargetObjectId
     * @return void
     */
