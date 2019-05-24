@@ -1,0 +1,178 @@
+<apex:page
+    standardController="RCM_Candidate__c"
+    extensions="RCM_CandidateRegistrationCX">
+    <!-- (c) 2019 Fumiyasu Tanaka -->
+    <script>
+        var loadFile = function (event) {
+            var output = document.getElementById('candidate__Review_Picture');
+            output.src = URL.createObjectURL(event.target.files[0]);
+        };
+    </script>
+
+    <apex:sectionHeader title="Candidate Edit" subtitle="{!candidate.Name}"/>
+    <apex:form >
+        <apex:pageBlock title="Candidate Edit" mode="edit">
+            <apex:pagemessages/>
+
+            <!-- Save, Save&New, Cancel -->
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!save}" value="Save"/>
+                <apex:commandButton action="{!saveAndNew}" value="Save & New"/>
+                <apex:commandButton action="{!cancel}" value="Cancel"/>
+            </apex:pageBlockButtons>
+            <!-- /Save, Save&New, Cancel -->
+
+            <!-- Information Input Form -->
+            <apex:pageBlockSection title="Information" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Candidate Number" for="candidate__Name"/>
+                    <apex:outputText value="{!candidate.Name}" id="candidate__Name"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Owner" for="candidate__Owner"/>
+                    <apex:outputText value="{!candidate.Owner.Name}" id="candidate__Owner"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="First Name" for="candidate__First_Name"/>
+                    <apex:inputField
+                        value="{!candidate.RCM_First_Name__c}"
+                        id="candidate__First_Name"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Phone" for="candidate__Phone"/>
+                    <apex:inputField value="{!candidate.RCM_Phone__c}" id="candidate__Phone"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Last Name" for="candidate__Last_Name"/>
+                    <apex:inputField
+                        value="{!candidate.RCM_Last_Name__c}"
+                        id="candidate__First_Name"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Email" for="candidate__Email"/>
+                    <apex:inputField value="{!candidate.RCM_Email__c}" id="candidate__Email"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Birthday" for="candidate__Birthday"/>
+                    <apex:inputField value="{!candidate.RCM_Birthday__c}" id="candidate__Birthday"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <!-- /Information Input Form -->
+
+            <!-- Address Input Form -->
+            <apex:pageBlockSection title="Address" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Street" for="candidate__Street"/>
+                    <apex:inputField value="{!candidate.RCM_Street__c}" id="candidate__Street"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="State" for="candidate__State"/>
+                    <apex:inputField value="{!candidate.RCM_State__c}" id="candidate__State"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="City" for="candidate__City"/>
+                    <apex:inputField value="{!candidate.RCM_City__c}" id="candidate__City"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Postal Code" for="candidate__Postal_Code"/>
+                    <apex:inputField
+                        value="{!candidate.RCM_Postal_Code__c}"
+                        id="candidate__Postal_Code"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Country" for="candidate__Country"/>
+                    <apex:inputField value="{!candidate.RCM_Country__c}" id="candidate__Country"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <!-- /Address Input Form -->
+
+            <!-- Employment Input Form -->
+            <apex:pageBlockSection title="Employment" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel
+                        value="Currently Employed"
+                        for="candidate__Currently_Employed"/>
+                    <apex:inputField
+                        value="{!candidate.RCM_Currently_Employed__c}"
+                        id="candidate__Currently_Employed"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel
+                        value="Years of Experience"
+                        for="candidate__Years_of_Experience"/>
+                    <apex:inputField
+                        value="{!candidate.RCM_Years_of_Experience__c}"
+                        id="candidate__Years_of_Experience"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Current Company" for="candidate__Current_Company"/>
+                    <apex:inputField
+                        value="{!candidate.RCM_Current_Company__c}"
+                        id="candidate__Current_Company"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <!-- /Employment Input Form -->
+
+            <!-- Additional Details Input Form -->
+            <apex:pageBlockSection title="Additional Details" columns="2">
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Education" for="candidate__Education"/>
+                    <apex:inputField
+                        value="{!candidate.RCM_Education__c}"
+                        id="candidate__Education"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <!-- /Additional Details Input Form -->
+
+            <!-- Profile Picture Upload Form-->
+            <apex:pageBlockSection title="Profile Picture" columns="2">
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Upload Picture" for="candidate__Upload_Picture"/>
+                    <apex:inputFile
+                        value="{!picture}"
+                        id="candidate__Upload_Picture"
+                        onchange="loadFile(event)"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel
+                        value="Upload Picture (Preview)"
+                        for="candidate__Review_Picture"/>
+                    <img id="candidate__Review_Picture" style="width:200px"/>
+                </apex:pageBlockSectionItem>
+
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel
+                        value="Registered Picture"
+                        for="candidate__Registered_Picture"/>
+                    <apex:image
+                        value="{!candidate.RCM_Picture_Url__c}"
+                        alt="Registered Picture"
+                        id="candidate__Registered_Picture"
+                        style="width:200px"/>
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <!-- /Profile Picture Upload Form-->
+
+        </apex:pageBlock>
+    </apex:form>
+
+</apex:page>
