@@ -1,0 +1,72 @@
+<apex:page
+    standardController="RCM_Candidate__c"
+    extensions="RCM_CandidateWeatherCX"
+    sidebar="false"
+    showHeader="false">
+    <!-- (c) 2019 Fumiyasu Tanaka -->
+
+    <!-- Weather Information -->
+    <apex:pageBlock title="Weather Information">
+
+        <apex:pageBlockSection title="Weather Info" columns="2">
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Main" for="Weather__Main"/>
+                <apex:outputText value="{!main}" id="Weather__Main"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Description" for="Weather__Description"/>
+                <apex:outputText value="{!description}" id="Weather__Description"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Icon" for="Weather__Icon"/>
+                <apex:image
+                    url="http://openweathermap.org/img/w/{!icon}.png"
+                    alt="weather icon"
+                    rendered="{!if((icon==null),false,true)}"
+                    id="Weather__Icon"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Id" for="Weather__Id"/>
+                <apex:outputText value="{!id}" id="Weather__Id"/>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <!-- /Weather Information -->
+
+        <!-- Candidate's Address -->
+        <apex:pageBlockSection title="Address" columns="2">
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Street" for="candidate__Street"/>
+                <apex:outputText value="{!candidate.RCM_Street__c}" id="candidate__Street"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="State" for="candidate__State"/>
+                <apex:outputText value="{!candidate.RCM_State__c}" id="candidate__State"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="City" for="candidate__City"/>
+                <apex:outputText value="{!candidate.RCM_City__c}" id="candidate__City"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Postal_Code" for="candidate__Postal_Code"/>
+                <apex:outputText
+                    value="{!candidate.RCM_Postal_Code__c}"
+                    id="candidate__Postal_Code"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem ></apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Country" for="candidate__Country"/>
+                <apex:outputText value="{!candidate.RCM_Country__c}" id="candidate__Country"/>
+            </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        <!-- /Candidate's Address -->
+
+    </apex:pageBlock>
+</apex:page>
