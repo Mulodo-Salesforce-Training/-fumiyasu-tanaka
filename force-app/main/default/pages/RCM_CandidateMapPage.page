@@ -1,0 +1,24 @@
+<apex:page standardController="RCM_Candidate__c"  extensions="RCM_CandidateMapCX" sidebar="false" showHeader="false">
+    <!-- (c) 2019 Fumiyasu Tanaka -->
+
+    <apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css" />
+    <apex:includescript value="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js" />
+    
+    <div id="map" style="width: 100%; height: 725px"></div>
+    
+    <!-- Map for candidate -->
+    <script>
+        var lat = '{!lat}';
+        var lng = '{!lng}';
+        var array = [lat, lng];
+        var address = '{!address}';
+        
+        var map = L.map('map').setView(array, 14);
+        mapLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>';
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; ' + mapLink + ' Contributors', maxZoom: 18,}).addTo(map);
+        
+        L.marker(array,{color : 'red',fillColor : '#f03', fillOpacity: 0.5,radius :700}).addTo(map).bindPopup(address).openPopup();
+    </script>
+    <!-- /Map for candidate -->
+   
+</apex:page>
