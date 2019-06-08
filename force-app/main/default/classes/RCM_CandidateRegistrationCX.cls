@@ -11,7 +11,7 @@ public class RCM_CandidateRegistrationCX {
     private final String ATTACHMENT_PATH = '/servlet/servlet.FileDownload?file=';
     private final String ATTACHMENT_NAME = 'RCM_ProfilePicture.jpg';
     private final String ATTACHMENT_CONTENT_TYPE = 'application/jpg';
-    private final RCM_Candidate__c candidate;
+    @TestVisible private RCM_Candidate__c candidate;
     public blob Picture {
         get;
         set;

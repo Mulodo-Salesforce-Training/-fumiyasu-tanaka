@@ -26,8 +26,13 @@ public class RCM_DoublePositionsTriggerHander {
             }
 
             // Compare Data in Trigger.New
+            Integer countSameNameData = 0;
             for (RCM_Position__c pcNew : triggerNew) {
-                if (pc.Name == pcNew.Name && pc.Id != pcNew.Id) {
+                if (pc.Name == pcNew.Name) {
+                    countSameNameData++;
+                }
+                
+                if (countSameNameData > 1) {
                     pc.addError('Please Input Unique Position Name.');
                 }
             }

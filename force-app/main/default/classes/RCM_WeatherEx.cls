@@ -11,8 +11,8 @@ public class RCM_WeatherEx extends RCM_Weather {
     private final String API_KEY = '&appid=e24206cc069c1e27e05a0db6ad7fc8d3';
     private final String QUERY_LAT = '?lat=';
     private final String QUERY_LON = '&lon=';
-    private Double lng;
-    private Double lat;
+    @TestVisible private Double lng;
+    @TestVisible private Double lat;
 
     /**
     * @author Fumiyasu Tanaka

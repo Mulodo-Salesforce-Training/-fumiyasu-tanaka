@@ -7,8 +7,8 @@
 public class RCM_Coordinate {
     private final String API = 'https://www.geocoding.jp/api/';
     private final String QUERY_ADDRESS = '?q=';
-    private String addressReplace;
-    private String address;
+    @TestVisible private String addressReplace;
+	private String address;
     public Double lat;
     public Double lng;
 
@@ -93,7 +93,7 @@ public class RCM_Coordinate {
     * @description
     * This method replaces some characters for API query.
     */
-    private void replaceAddress() {
+    @TestVisible private void replaceAddress() {
         addressReplace = address;
         addressReplace = addressReplace.replace(' ', '+'); // replace full-width space
         addressReplace = addressReplace.replace('　', '+'); // replace half-width space
